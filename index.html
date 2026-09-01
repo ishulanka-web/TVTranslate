@@ -19,12 +19,30 @@
         .player {
             width: 100%;
             height: 68vh;
+            position: relative;
         }
 
         iframe {
             width: 100%;
             height: 100%;
             border: 0;
+        }
+
+        #subtitle {
+            position: absolute;
+            left: 5%;
+            right: 5%;
+            bottom: 5%;
+            text-align: center;
+            color: white;
+            background: rgba(0, 0, 0, 0.80);
+            padding: 12px 20px;
+            font-size: 30px;
+            font-weight: bold;
+            line-height: 1.3;
+            border-radius: 8px;
+            z-index: 10;
+            min-height: 35px;
         }
 
         .controls {
@@ -59,14 +77,13 @@
         }
 
         .selected {
-            background: #ffffff;
-            color: #000000;
+            background: white;
+            color: black;
         }
 
-        #subtitle {
-            margin-top: 10px;
-            font-size: 24px;
-            min-height: 35px;
+        #status {
+            font-size: 18px;
+            margin-top: 8px;
         }
     </style>
 </head>
@@ -74,13 +91,20 @@
 <body>
 
     <div class="player">
+
         <iframe
-            src="https://www.youtube.com/embed/N__uYg18pUA?cc_load_policy=1&cc_lang_pref=en"
+            id="youtubePlayer"
+            src="https://www.youtube.com/embed/N__uYg18pUA?enablejsapi=1&cc_load_policy=1&cc_lang_pref=hi"
             title="YouTube video player"
             referrerpolicy="strict-origin-when-cross-origin"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowfullscreen>
         </iframe>
+
+        <div id="subtitle">
+            Select Hindi to start translation
+        </div>
+
     </div>
 
     <div class="controls">
@@ -91,19 +115,19 @@
             Select spoken language
         </div>
 
-        <button id="hindi" onclick="selectLanguage('Hindi')">
+        <button id="hindi" onclick="selectLanguage('hi')">
             Hindi
         </button>
 
-        <button id="tamil" onclick="selectLanguage('Tamil')">
+        <button id="tamil" onclick="selectLanguage('ta')">
             Tamil
         </button>
 
-        <button id="malayalam" onclick="selectLanguage('Malayalam')">
+        <button id="malayalam" onclick="selectLanguage('ml')">
             Malayalam
         </button>
 
-        <button id="telugu" onclick="selectLanguage('Telugu')">
+        <button id="telugu" onclick="selectLanguage('te')">
             Telugu
         </button>
 
@@ -111,42 +135,362 @@
             Translate to: <b>English</b>
         </div>
 
-        <div id="subtitle">
-            Select a language
+        <div id="status">
+            Ready
         </div>
 
     </div>
 
-    <script>
+<script>
 
-        function selectLanguage(language) {
+const VIDEO_ID = "N__uYg18pUA";
 
-            document.getElementById("hindi").classList.remove("selected");
-            document.getElementById("tamil").classList.remove("selected");
-            document.getElementById("malayalam").classList.remove("selected");
-            document.getElementById("telugu").classList.remove("selected");
+let selectedLanguage = null;
+let captions = [];
+let translatedCache = {};
+let timer = null;
 
-            if (language === "Hindi") {
-                document.getElementById("hindi").classList.add("selected");
-            }
 
-            if (language === "Tamil") {
-                document.getElementById("tamil").classList.add("selected");
-            }
+/* --------------------------------
+   SELECT LANGUAGE
+-------------------------------- */
 
-            if (language === "Malayalam") {
-                document.getElementById("malayalam").classList.add("selected");
-            }
+function selectLanguage(language) {
 
-            if (language === "Telugu") {
-                document.getElementById("telugu").classList.add("selected");
-            }
+    selectedLanguage = language;
 
-            document.getElementById("subtitle").innerHTML =
-                language + " selected — English translation ready";
+    document.getElementById("hindi").classList.remove("selected");
+    document.getElementById("tamil").classList.remove("selected");
+    document.getElementById("malayalam").classList.remove("selected");
+    document.getElementById("telugu").classList.remove("selected");
+
+    if (language === "hi") {
+        document.getElementById("hindi").classList.add("selected");
+    }
+
+    if (language === "ta") {
+        document.getElementById("tamil").classList.add("selected");
+    }
+
+    if (language === "ml") {
+        document.getElementById("malayalam").classList.add("selected");
+    }
+
+    if (language === "te") {
+        document.getElementById("telugu").classList.add("selected");
+    }
+
+    document.getElementById("status").innerHTML =
+        "Loading captions...";
+
+    loadCaptions(language);
+}
+
+
+/* --------------------------------
+   LOAD YOUTUBE TRANSCRIPT
+-------------------------------- */
+
+async function loadCaptions(language) {
+
+    try {
+
+        const url =
+            "https://youtube-transcript.ai/transcript/" +
+            VIDEO_ID +
+            ".txt?lang=" +
+            language;
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error("Caption request failed");
         }
 
-    </script>
+        const text = await response.text();
+
+        captions = parseTranscript(text);
+
+        if (captions.length === 0) {
+            throw new Error("No captions found");
+        }
+
+        document.getElementById("status").innerHTML =
+            captions.length + " captions loaded — translating...";
+
+        startSubtitleTimer();
+
+    } catch (error) {
+
+        console.error(error);
+
+        document.getElementById("status").innerHTML =
+            "Could not load captions";
+
+        document.getElementById("subtitle").innerHTML =
+            "Caption error";
+
+    }
+}
+
+
+/* --------------------------------
+   PARSE TIMESTAMPED TRANSCRIPT
+-------------------------------- */
+
+function parseTranscript(text) {
+
+    const lines = text.split("\n");
+
+    const result = [];
+
+    for (let line of lines) {
+
+        line = line.trim();
+
+        const match =
+            line.match(/^\[(\d+):(\d+)\]\s*(.+)$/);
+
+        if (!match) {
+            continue;
+        }
+
+        const minutes = parseInt(match[1]);
+        const seconds = parseInt(match[2]);
+
+        const time =
+            minutes * 60 + seconds;
+
+        const caption =
+            match[3].trim();
+
+        if (caption) {
+
+            result.push({
+                time: time,
+                text: caption
+            });
+
+        }
+    }
+
+    return result;
+}
+
+
+/* --------------------------------
+   GET CURRENT VIDEO TIME
+-------------------------------- */
+
+function startSubtitleTimer() {
+
+    if (timer) {
+        clearInterval(timer);
+    }
+
+    timer = setInterval(async function() {
+
+        if (!selectedLanguage || captions.length === 0) {
+            return;
+        }
+
+        try {
+
+            const iframe =
+                document.getElementById("youtubePlayer");
+
+            const currentTime =
+                await getYouTubeTime(iframe);
+
+            showCurrentCaption(currentTime);
+
+        } catch (error) {
+
+            console.log(error);
+
+        }
+
+    }, 1000);
+}
+
+
+/* --------------------------------
+   YOUTUBE TIME
+-------------------------------- */
+
+function getYouTubeTime(iframe) {
+
+    return new Promise(function(resolve) {
+
+        const requestId =
+            "time_" + Date.now();
+
+        function listener(event) {
+
+            if (
+                event.source !== iframe.contentWindow
+            ) {
+                return;
+            }
+
+            try {
+
+                const data =
+                    JSON.parse(event.data);
+
+                if (
+                    data.event === "infoDelivery" &&
+                    data.info &&
+                    typeof data.info.currentTime === "number"
+                ) {
+
+                    window.removeEventListener(
+                        "message",
+                        listener
+                    );
+
+                    resolve(data.info.currentTime);
+                }
+
+            } catch (e) {
+            }
+        }
+
+        window.addEventListener(
+            "message",
+            listener
+        );
+
+        iframe.contentWindow.postMessage(
+            JSON.stringify({
+                event: "listening",
+                id: requestId,
+                channel: "channel1"
+            }),
+            "*"
+        );
+
+        iframe.contentWindow.postMessage(
+            JSON.stringify({
+                event: "command",
+                func: "getCurrentTime",
+                args: [],
+                channel: "channel1"
+            }),
+            "*"
+        );
+
+        setTimeout(function() {
+
+            window.removeEventListener(
+                "message",
+                listener
+            );
+
+            resolve(0);
+
+        }, 1500);
+
+    });
+}
+
+
+/* --------------------------------
+   SHOW CURRENT CAPTION
+-------------------------------- */
+
+async function showCurrentCaption(currentTime) {
+
+    let current = null;
+
+    for (let i = 0; i < captions.length; i++) {
+
+        if (captions[i].time <= currentTime) {
+            current = captions[i];
+        } else {
+            break;
+        }
+    }
+
+    if (!current) {
+        return;
+    }
+
+    const key =
+        selectedLanguage + "|" + current.text;
+
+    if (translatedCache[key]) {
+
+        document.getElementById("subtitle").innerHTML =
+            translatedCache[key];
+
+        return;
+    }
+
+    document.getElementById("subtitle").innerHTML =
+        "Translating...";
+
+    const translated =
+        await translateText(
+            current.text,
+            selectedLanguage
+        );
+
+    translatedCache[key] = translated;
+
+    document.getElementById("subtitle").innerHTML =
+        translated;
+}
+
+
+/* --------------------------------
+   TRANSLATE
+-------------------------------- */
+
+async function translateText(text, language) {
+
+    if (language === "en") {
+        return text;
+    }
+
+    try {
+
+        const url =
+            "https://api.mymemory.translated.net/get?q=" +
+            encodeURIComponent(text) +
+            "&langpair=" +
+            language +
+            "%7Cen";
+
+        const response =
+            await fetch(url);
+
+        if (!response.ok) {
+            throw new Error("Translation failed");
+        }
+
+        const data =
+            await response.json();
+
+        if (
+            data.responseData &&
+            data.responseData.translatedText
+        ) {
+
+            return data.responseData.translatedText;
+        }
+
+        return text;
+
+    } catch (error) {
+
+        console.error(error);
+
+        return text;
+    }
+}
+
+</script>
 
 </body>
 </html>
