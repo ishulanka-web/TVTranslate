@@ -455,32 +455,52 @@ async function translateText(text, language) {
 
     try {
 
-        const url =
-            "https://api.mymemory.translated.net/get?q=" +
-            encodeURIComponent(text) +
-            "&langpair=" +
-            language +
-            "%7Cen";
+        // MyMemory allows a maximum of 500 characters.
+        // Keep each request safely below that limit.
+        const maxLength = 450;
 
-        const response =
-            await fetch(url);
+        if (text.length <= maxLength) {
 
-        if (!response.ok) {
-            throw new Error("Translation failed");
+            return await translatePart(text, language);
+
         }
 
-        const data =
-            await response.json();
+        const words = text.split(" ");
+        let parts = [];
+        let current = "";
 
-        if (
-            data.responseData &&
-            data.responseData.translatedText
-        ) {
+        for (let word of words) {
 
-            return data.responseData.translatedText;
+            if ((current + " " + word).trim().length > maxLength) {
+
+                if (current.trim()) {
+                    parts.push(current.trim());
+                }
+
+                current = word;
+
+            } else {
+
+                current =
+                    (current + " " + word).trim();
+            }
         }
 
-        return text;
+        if (current.trim()) {
+            parts.push(current.trim());
+        }
+
+        let translatedParts = [];
+
+        for (let part of parts) {
+
+            const translated =
+                await translatePart(part, language);
+
+            translatedParts.push(translated);
+        }
+
+        return translatedParts.join(" ");
 
     } catch (error) {
 
@@ -490,7 +510,37 @@ async function translateText(text, language) {
     }
 }
 
-</script>
+
+async function translatePart(text, language) {
+
+    const url =
+        "https://api.mymemory.translated.net/get?q=" +
+        encodeURIComponent(text) +
+        "&langpair=" +
+        language +
+        "%7Cen";
+
+    const response =
+        await fetch(url);
+
+    if (!response.ok) {
+        throw new Error("Translation failed");
+    }
+
+    const data =
+        await response.json();
+
+    if (
+        data.responseData &&
+        data.responseData.translatedText
+    ) {
+
+        return data.responseData.translatedText;
+    }
+
+    return text;
+}
+    </script>
 
 </body>
 </html>
