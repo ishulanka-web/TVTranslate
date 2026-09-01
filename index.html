@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TV Translate</title>
+
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            background: #000;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        #player {
+            width: 100%;
+            height: 75vh;
+        }
+
+        .controls {
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 32px;
+        }
+
+        p {
+            font-size: 22px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="player"></div>
+
+    <div class="controls">
+        <h1>TV TRANSLATE</h1>
+        <p>Hindi → English test</p>
+        <p>Jolly LLB 3</p>
+    </div>
+
+    <script>
+        var tag = document.createElement("script");
+        tag.src = "https://www.youtube.com/iframe_api";
+
+        var firstScriptTag =
+            document.getElementsByTagName("script")[0];
+
+        firstScriptTag.parentNode.insertBefore(
+            tag,
+            firstScriptTag
+        );
+
+        var player;
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player("player", {
+                width: "100%",
+                height: "100%",
+
+                videoId: "N__uYg18pUA",
+
+                playerVars: {
+                    autoplay: 0,
+                    controls: 1,
+                    cc_load_policy: 1,
+                    cc_lang_pref: "en",
+                    rel: 0
+                },
+
+                events: {
+                    onReady: function () {
+                        console.log("YouTube player ready");
+                    },
+
+                    onError: function (event) {
+                        console.log(
+                            "YouTube error: " + event.data
+                        );
+                    }
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>
