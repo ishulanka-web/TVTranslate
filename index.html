@@ -96,15 +96,15 @@
 
         <iframe
             id="youtubePlayer"
-            src="https://www.youtube.com/embed/N__uYg18pUA?enablejsapi=1&cc_load_policy=1&cc_lang_pref=hi"
+            src="https://www.youtube.com/embed/N__uYg18pUA?enablejsapi=1&cc_load_policy=1&cc_lang_pref=en&fs=0"
             title="YouTube video player"
             referrerpolicy="strict-origin-when-cross-origin"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowfullscreen>
         </iframe>
 
-        <div id="subtitle">
-            Select Hindi to start translation
+        <div id="subtitle"></div>
+        <button id="fullscreenBtn" onclick="goFullscreen()">⛶ Full Screen</button>
         </div>
 
     </div>
@@ -541,6 +541,13 @@ async function translatePart(text, language) {
     }
 
     return text;
+}
+    function goFullscreen() {
+    const playerArea = document.querySelector(".player");
+
+    if (playerArea.requestFullscreen) {
+        playerArea.requestFullscreen();
+    }
 }
     </script>
 
