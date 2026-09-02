@@ -526,11 +526,12 @@ async function translateText(text, language) {
 async function translatePart(text, language) {
 
     const url =
-        "https://api.mymemory.translated.net/get?q=" +
-        encodeURIComponent(text) +
-        "&langpair=" +
-     language +
-"%7Cen";
+    "https://clients5.google.com/translate_a/t?client=dict-chrome-ex" +
+    "&sl=" +
+    language +
+    "&tl=en" +
+    "&q=" +
+    encodeURIComponent(text);
     const response =
         await fetch(url);
 
@@ -538,25 +539,11 @@ async function translatePart(text, language) {
         throw new Error("Translation failed");
     }
 
-    const data =
-        await response.json();
+const data =
+    await response.json();
 
-if (
-    data.responseData &&
-    data.responseData.translatedText &&
-    data.responseData.translatedText !== text
-) {
-    return data.responseData.translatedText;
-}
-
-if (data.matches && data.matches.length > 0) {
-    const match = data.matches.find(
-        m => m.translation && m.translation !== text
-    );
-
-    if (match) {
-        return match.translation;
-    }
+if (Array.isArray(data) && data[0]) {
+    return data[0];
 }
 
 return text;
