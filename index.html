@@ -529,9 +529,8 @@ async function translatePart(text, language) {
         "https://api.mymemory.translated.net/get?q=" +
         encodeURIComponent(text) +
         "&langpair=" +
-        language +
-        "%7Cen";
-
+     language +
+"%7Cen&mt=1";
     const response =
         await fetch(url);
 
