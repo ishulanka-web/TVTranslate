@@ -241,17 +241,13 @@ async function loadCaptions(language) {
 -------------------------------- */
 
 function parseTranscript(text) {
-
     const lines = text.split("\n");
-
     const result = [];
 
     for (let line of lines) {
-
         line = line.trim();
 
-        const match =
-            line.match(/^\[(\d+):(\d+)\]\s*(.+)$/);
+        const match = line.match(/^\[(\d+):(\d+)\]\s*(.+)$/);
 
         if (!match) {
             continue;
@@ -260,19 +256,33 @@ function parseTranscript(text) {
         const minutes = parseInt(match[1]);
         const seconds = parseInt(match[2]);
 
-        const time =
-            minutes * 60 + seconds;
-
-        const caption =
-            match[3].trim();
+        const time = minutes * 60 + seconds;
+        const caption = match[3].trim();
 
         if (caption) {
+            // Split long captions into short subtitle lines
+            const words = caption.split(/\s+/);
+            let current = "";
 
-            result.push({
-                time: time,
-                text: caption
-            });
+            for (const word of words) {
+                if ((current + " " + word).trim().length > 70) {
+                    result.push({
+                        time: time,
+                        text: current.trim()
+                    });
 
+                    current = word;
+                } else {
+                    current += " " + word;
+                }
+            }
+
+            if (current.trim()) {
+                result.push({
+                    time: time,
+                    text: current.trim()
+                });
+            }
         }
     }
 
