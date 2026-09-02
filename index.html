@@ -339,9 +339,7 @@ function getYouTubeTime(iframe) {
 
         function listener(event) {
 
-            if (
-                event.source !== iframe.contentWindow
-            ) {
+            if (event.source !== iframe.contentWindow) {
                 return;
             }
 
@@ -364,8 +362,7 @@ function getYouTubeTime(iframe) {
                     resolve(data.info.currentTime);
                 }
 
-            } catch (e) {
-            }
+            } catch (e) {}
         }
 
         window.addEventListener(
@@ -402,14 +399,9 @@ function getYouTubeTime(iframe) {
             resolve(0);
 
         }, 1500);
-
     });
 }
 
-
-/* --------------------------------
-   SHOW CURRENT CAPTION
--------------------------------- */
 
 async function showCurrentCaption(currentTime) {
 
@@ -429,7 +421,9 @@ async function showCurrentCaption(currentTime) {
     }
 
     const key =
-        selectedLanguage + "|" + current.text;
+        selectedLanguage + "|" +
+        current.time + "|" +
+        current.text;
 
     if (translatedCache[key]) {
 
@@ -442,19 +436,52 @@ async function showCurrentCaption(currentTime) {
     document.getElementById("subtitle").innerHTML =
         "Translating...";
 
+    const captionTime = current.time;
+    const captionText = current.text;
+    const captionLanguage = selectedLanguage;
+
     const translated =
         await translateText(
-            current.text,
-            selectedLanguage
+            captionText,
+            captionLanguage
         );
+
+    if (
+        selectedLanguage !== captionLanguage ||
+        captions.length === 0
+    ) {
+        return;
+    }
 
     translatedCache[key] = translated;
 
-    document.getElementById("subtitle").innerHTML =
-        translated;
+    const iframe =
+        document.getElementById("youtubePlayer");
+
+    const latestTime =
+        await getYouTubeTime(iframe);
+
+    let latestCaption = null;
+
+    for (let i = 0; i < captions.length; i++) {
+
+        if (captions[i].time <= latestTime) {
+            latestCaption = captions[i];
+        } else {
+            break;
+        }
+    }
+
+    if (
+        latestCaption &&
+        latestCaption.time === captionTime &&
+        latestCaption.text === captionText
+    ) {
+
+        document.getElementById("subtitle").innerHTML =
+            translated;
+    }
 }
-
-
 /* --------------------------------
    TRANSLATE
 -------------------------------- */
