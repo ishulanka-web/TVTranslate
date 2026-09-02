@@ -541,15 +541,25 @@ async function translatePart(text, language) {
     const data =
         await response.json();
 
-    if (
-        data.responseData &&
-        data.responseData.translatedText
-    ) {
+if (
+    data.responseData &&
+    data.responseData.translatedText &&
+    data.responseData.translatedText !== text
+) {
+    return data.responseData.translatedText;
+}
 
-        return data.responseData.translatedText;
+if (data.matches && data.matches.length > 0) {
+    const match = data.matches.find(
+        m => m.translation && m.translation !== text
+    );
+
+    if (match) {
+        return match.translation;
     }
+}
 
-    return text;
+return text;
 }
     function goFullscreen() {
     const playerArea = document.querySelector(".player");
