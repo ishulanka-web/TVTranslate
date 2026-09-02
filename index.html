@@ -11,6 +11,7 @@
 
     <title>TV Translate</title>
 
+
     <style>
 
         html,
@@ -23,9 +24,11 @@
             font-family: Arial, sans-serif;
         }
 
+
         body {
             overflow: hidden;
         }
+
 
         .player {
             width: 100%;
@@ -34,22 +37,22 @@
             background: #000;
         }
 
+
         iframe {
             width: 100%;
             height: 100%;
             border: 0;
         }
 
+
         #subtitle {
+
             position: absolute;
 
-            left: 10%;
-            right: 10%;
-            bottom: 5%;
+            left: 8%;
+            right: 8%;
 
-            max-width: 80%;
-
-            margin: 0 auto;
+            bottom: 6%;
 
             text-align: center;
 
@@ -57,9 +60,10 @@
 
             background: rgba(0, 0, 0, 0.82);
 
-            padding: 8px 18px;
+            padding: 8px 16px;
 
             font-size: 24px;
+
             font-weight: bold;
 
             line-height: 1.3;
@@ -70,6 +74,10 @@
 
             box-sizing: border-box;
 
+            max-height: 90px;
+
+            overflow: hidden;
+
             white-space: normal;
 
             overflow-wrap: break-word;
@@ -77,12 +85,13 @@
             word-wrap: break-word;
         }
 
+
         #fullscreenBtn {
 
             position: absolute;
 
-            right: 15px;
             top: 15px;
+            right: 15px;
 
             z-index: 20;
 
@@ -101,6 +110,7 @@
             cursor: pointer;
         }
 
+
         .controls {
 
             height: 32vh;
@@ -114,6 +124,7 @@
             box-sizing: border-box;
         }
 
+
         h1 {
 
             font-size: 30px;
@@ -121,12 +132,14 @@
             margin: 5px;
         }
 
+
         .language-title {
 
             font-size: 20px;
 
             margin: 8px;
         }
+
 
         button {
 
@@ -143,10 +156,12 @@
             cursor: pointer;
         }
 
+
         button:focus {
 
             outline: 3px solid white;
         }
+
 
         .selected {
 
@@ -154,6 +169,7 @@
 
             color: black;
         }
+
 
         #status {
 
@@ -167,12 +183,16 @@
 </head>
 
 
+
 <body>
 
 
-    <!-- VIDEO PLAYER -->
+    <!-- ================================
+         VIDEO PLAYER
+    ================================= -->
 
     <div class="player">
+
 
         <iframe
             id="youtubePlayer"
@@ -184,12 +204,12 @@
         </iframe>
 
 
-        <!-- OUR ENGLISH SUBTITLE -->
+        <!-- ENGLISH TRANSLATION -->
 
         <div id="subtitle"></div>
 
 
-        <!-- FULLSCREEN -->
+        <!-- FULL SCREEN -->
 
         <button
             id="fullscreenBtn"
@@ -197,15 +217,21 @@
             ⛶ Full Screen
         </button>
 
+
     </div>
 
 
 
-    <!-- CONTROLS -->
+    <!-- ================================
+         CONTROLS
+    ================================= -->
 
     <div class="controls">
 
-        <h1>TV TRANSLATE</h1>
+
+        <h1>
+            TV TRANSLATE
+        </h1>
 
 
         <div class="language-title">
@@ -253,80 +279,59 @@
             Ready
         </div>
 
+
     </div>
 
 
 
-    <!-- YOUTUBE IFRAME API -->
-
-    <script src="https://www.youtube.com/iframe_api"></script>
-
+    <!-- ================================
+         JAVASCRIPT
+    ================================= -->
 
     <script>
 
 
-        /* =========================================
+        /* =================================
            VIDEO
-        ========================================= */
+        ================================= */
 
-        const VIDEO_ID = "N__uYg18pUA";
-
-
-        let youtubePlayer = null;
+        const VIDEO_ID =
+            "N__uYg18pUA";
 
 
-        let selectedLanguage = null;
+        let selectedLanguage =
+            null;
 
 
-        let captions = [];
+        let captions =
+            [];
 
 
-        let translatedCache = {};
+        let translatedCache =
+            {};
 
 
-        let timer = null;
+        let timer =
+            null;
 
 
-        let translationRequest = 0;
-
-
-
-        /* =========================================
-           YOUTUBE PLAYER READY
-        ========================================= */
-
-        function onYouTubeIframeAPIReady() {
-
-            youtubePlayer =
-                new YT.Player("youtubePlayer", {
-
-                    events: {
-
-                        onReady: function () {
-
-                            console.log(
-                                "YouTube player ready"
-                            );
-
-                        }
-
-                    }
-
-                });
-
-        }
+        let translationRequest =
+            0;
 
 
 
-        /* =========================================
+        /* =================================
            SELECT LANGUAGE
-        ========================================= */
+        ================================= */
 
         function selectLanguage(language) {
 
 
-            selectedLanguage = language;
+            selectedLanguage =
+                language;
 
+
+            /* Remove selected state */
 
             document
                 .getElementById("hindi")
@@ -347,6 +352,8 @@
                 .getElementById("telugu")
                 .classList.remove("selected");
 
+
+            /* Add selected state */
 
             if (language === "hi") {
 
@@ -384,16 +391,17 @@
             }
 
 
-            /* Clear old subtitle */
+            /* Cancel old translation */
+
+            translationRequest++;
+
+
+            /* Clear subtitle */
 
             document
                 .getElementById("subtitle")
-                .innerHTML = "";
-
-
-            /* New translation generation */
-
-            translationRequest++;
+                .innerHTML =
+                "";
 
 
             document
@@ -408,9 +416,9 @@
 
 
 
-        /* =========================================
+        /* =================================
            LOAD TRANSCRIPT
-        ========================================= */
+        ================================= */
 
         async function loadCaptions(language) {
 
@@ -450,7 +458,9 @@
                     parseTranscript(text);
 
 
-                if (captions.length === 0) {
+                if (
+                    captions.length === 0
+                ) {
 
                     throw new Error(
                         "No captions found"
@@ -493,9 +503,13 @@
 
 
 
-        /* =========================================
+        /* =================================
            PARSE TRANSCRIPT
-        ========================================= */
+           
+           IMPORTANT:
+           We do NOT split captions into
+           70-character pieces.
+        ================================= */
 
         function parseTranscript(text) {
 
@@ -504,10 +518,13 @@
                 text.split("\n");
 
 
-            const result = [];
+            const result =
+                [];
 
 
-            for (let line of lines) {
+            for (
+                let line of lines
+            ) {
 
 
                 line =
@@ -572,33 +589,176 @@
 
 
 
-        /* =========================================
-           GET CURRENT VIDEO TIME
-        ========================================= */
+        /* =================================
+           GET YOUTUBE VIDEO TIME
+           
+           Uses the postMessage method
+           that worked with the TV.
+        ================================= */
 
         function getCurrentVideoTime() {
 
 
-            if (
-                youtubePlayer &&
-                typeof youtubePlayer.getCurrentTime ===
-                "function"
-            ) {
-
-                return youtubePlayer.getCurrentTime();
-
-            }
+            const iframe =
+                document.getElementById(
+                    "youtubePlayer"
+                );
 
 
-            return 0;
+            return new Promise(
+                function(resolve) {
+
+
+                    let finished =
+                        false;
+
+
+                    function finish(time) {
+
+
+                        if (finished) {
+                            return;
+                        }
+
+
+                        finished =
+                            true;
+
+
+                        window.removeEventListener(
+                            "message",
+                            listener
+                        );
+
+
+                        resolve(time);
+
+                    }
+
+
+                    function listener(event) {
+
+
+                        if (
+                            event.source !==
+                            iframe.contentWindow
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        try {
+
+
+                            const data =
+                                JSON.parse(
+                                    event.data
+                                );
+
+
+                            if (
+
+                                data.event ===
+                                "infoDelivery"
+
+                                &&
+
+                                data.info
+
+                                &&
+
+                                typeof data.info.currentTime ===
+                                "number"
+
+                            ) {
+
+
+                                finish(
+                                    data.info.currentTime
+                                );
+
+                            }
+
+
+                        } catch (e) {}
+
+                    }
+
+
+                    window.addEventListener(
+                        "message",
+                        listener
+                    );
+
+
+                    /* Tell YouTube to start
+                       sending information */
+
+                    iframe.contentWindow.postMessage(
+
+                        JSON.stringify({
+
+                            event:
+                                "listening",
+
+                            channel:
+                                "channel1"
+
+                        }),
+
+                        "*"
+
+                    );
+
+
+                    /* Ask for current time */
+
+                    iframe.contentWindow.postMessage(
+
+                        JSON.stringify({
+
+                            event:
+                                "command",
+
+                            func:
+                                "getCurrentTime",
+
+                            args:
+                                [],
+
+                            channel:
+                                "channel1"
+
+                        }),
+
+                        "*"
+
+                    );
+
+
+                    /* Safety timeout */
+
+                    setTimeout(
+                        function() {
+
+                            finish(0);
+
+                        },
+                        1500
+                    );
+
+                }
+            );
 
         }
 
 
 
-        /* =========================================
+        /* =================================
            START SUBTITLE TIMER
-        ========================================= */
+        ================================= */
 
         function startSubtitleTimer() {
 
@@ -611,45 +771,63 @@
 
 
             timer =
-                setInterval(function () {
+                setInterval(
+                    async function() {
 
 
-                    if (
-                        !selectedLanguage ||
-                        captions.length === 0
-                    ) {
+                        if (
+                            !selectedLanguage ||
+                            captions.length === 0
+                        ) {
 
-                        return;
+                            return;
 
-                    }
-
-
-                    const currentTime =
-                        getCurrentVideoTime();
+                        }
 
 
-                    showCurrentCaption(
-                        currentTime
-                    );
+                        try {
 
 
-                }, 500);
+                            const currentTime =
+                                await getCurrentVideoTime();
+
+
+                            await showCurrentCaption(
+                                currentTime
+                            );
+
+
+                        } catch (error) {
+
+
+                            console.log(error);
+
+                        }
+
+
+                    },
+                    500
+                );
 
         }
 
 
 
-        /* =========================================
-           FIND CURRENT CAPTION
-        ========================================= */
+        /* =================================
+           SHOW CURRENT CAPTION
+        ================================= */
 
         async function showCurrentCaption(
             currentTime
         ) {
 
 
-            let current = null;
+            let current =
+                null;
 
+
+            /* Find caption matching
+               current video time */
 
             for (
                 let i = 0;
@@ -682,6 +860,8 @@
             }
 
 
+            /* Unique cache key */
+
             const key =
 
                 selectedLanguage +
@@ -692,9 +872,9 @@
 
 
 
-            /* =====================================
+            /* =================================
                ALREADY TRANSLATED
-            ===================================== */
+            ================================= */
 
             if (
                 translatedCache[key]
@@ -713,9 +893,9 @@
 
 
 
-            /* =====================================
-               NEW TRANSLATION
-            ===================================== */
+            /* =================================
+               SHOW TRANSLATING
+            ================================= */
 
             document
                 .getElementById("subtitle")
@@ -742,6 +922,8 @@
             try {
 
 
+                /* Translate */
+
                 const translated =
                     await translateText(
 
@@ -754,7 +936,7 @@
 
 
                 /* =================================
-                   CHECK IF USER CHANGED LANGUAGE
+                   LANGUAGE CHANGED?
                 ================================= */
 
                 if (
@@ -769,12 +951,17 @@
 
 
                 /* =================================
-                   CHECK VIDEO MOVED ON
+                   GET LATEST VIDEO TIME
                 ================================= */
 
                 const latestTime =
-                    getCurrentVideoTime();
+                    await getCurrentVideoTime();
 
+
+
+                /* =================================
+                   FIND LATEST CAPTION
+                ================================= */
 
                 let latestCaption =
                     null;
@@ -804,12 +991,25 @@
                 }
 
 
+
+                /* =================================
+                   VIDEO MOVED ON?
+                ================================= */
+
                 if (
-                    !latestCaption ||
+
+                    !latestCaption
+
+                    ||
+
                     latestCaption.time !==
-                    captionTime ||
+                    captionTime
+
+                    ||
+
                     latestCaption.text !==
                     captionText
+
                 ) {
 
                     return;
@@ -818,13 +1018,13 @@
 
 
 
-                /* =================================
-                   SAVE TRANSLATION
-                ================================= */
+                /* Save translation */
 
                 translatedCache[key] =
                     translated;
 
+
+                /* Display */
 
                 document
                     .getElementById("subtitle")
@@ -849,9 +1049,9 @@
 
 
 
-        /* =========================================
+        /* =================================
            TRANSLATE TEXT
-        ========================================= */
+        ================================= */
 
         async function translateText(
             text,
@@ -859,7 +1059,9 @@
         ) {
 
 
-            if (language === "en") {
+            if (
+                language === "en"
+            ) {
 
                 return text;
 
@@ -868,10 +1070,6 @@
 
             try {
 
-
-                /*
-                 Google translation endpoint
-                */
 
                 return await translatePart(
                     text,
@@ -893,9 +1091,9 @@
 
 
 
-        /* =========================================
+        /* =================================
            GOOGLE TRANSLATION
-        ========================================= */
+        ================================= */
 
         async function translatePart(
             text,
@@ -951,9 +1149,9 @@
 
 
 
-        /* =========================================
-           FULLSCREEN
-        ========================================= */
+        /* =================================
+           FULL SCREEN
+        ================================= */
 
         function goFullscreen() {
 
