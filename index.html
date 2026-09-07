@@ -420,34 +420,72 @@
            LOAD TRANSCRIPT
         ================================= */
 
-        async function loadCaptions(language) {
+       async function loadCaptions(language) {
 
+    try {
 
-            try {
+        const url =
+            "http://192.168.8.144:8080/transcript" +
+            "?videoId=" +
+            encodeURIComponent(VIDEO_ID) +
+            "&lang=" +
+            encodeURIComponent(language);
 
+        const response =
+            await fetch(url);
 
-                const url =
+        if (!response.ok) {
+            throw new Error(
+                "Caption request failed"
+            );
+        }
 
-                    "https://youtube-transcript.ai/transcript/" +
+        const data =
+            await response.json();
 
-                    VIDEO_ID +
+        if (
+            !data.segments ||
+            data.segments.length === 0
+        ) {
+            throw new Error(
+                "No captions found"
+            );
+        }
 
-                    ".txt?lang=" +
+        captions =
+            data.segments.map(function (item) {
+                return {
+                    time: item.start,
+                    duration: item.duration,
+                    text: item.text
+                };
+            });
 
-                    language;
+        translatedCache = {};
 
+        document
+            .getElementById("status")
+            .innerHTML =
+            captions.length +
+            " captions loaded";
 
-                const response =
-                    await fetch(url);
+        startSubtitleTimer();
 
+    } catch (error) {
 
-                if (!response.ok) {
+        console.error(error);
 
-                    throw new Error(
-                        "Caption request failed"
-                    );
+        document
+            .getElementById("status")
+            .innerHTML =
+            "Could not load captions";
 
-                }
+        document
+            .getElementById("subtitle")
+            .innerHTML =
+            "Caption error";
+    }
+}
 
 
                 const text =
