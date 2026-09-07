@@ -1222,14 +1222,12 @@
                     video.channel;
 
                 item.onclick = function() {
-                    alert("PLAYER TYPE: " + typeof player);
+                    var iframe = document.getElementById("youtubePlayer");
 
-                    try {
-                        player.loadVideoById(video.videoId);
-                        alert("COMMAND SENT: " + video.videoId);
-                    } catch (error) {
-                        alert("PLAYER ERROR: " + error);
-    }
+                    iframe.src =
+                        "https://www.youtube.com/embed/" +
+                        video.videoId +
+                        "?enablejsapi=1&cc_load_policy=0&autoplay=1";
                 };
 
                 results.appendChild(item);
