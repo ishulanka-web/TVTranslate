@@ -1222,6 +1222,15 @@
                     video.channel;
 
                 item.onclick = function() {
+                    document.getElementById("searchResults").innerHTML = "";
+
+                    var iframe = document.getElementById("youtubePlayer");
+
+                    iframe.src =
+                        "https://www.youtube.com/embed/" +
+                        video.videoId +
+                        "?enablejsapi=1&cc_load_policy=0&autoplay=1";
+                };
                     var iframe = document.getElementById("youtubePlayer");
 
                     iframe.src =
