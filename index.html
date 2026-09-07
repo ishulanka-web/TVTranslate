@@ -1222,6 +1222,7 @@
                     video.channel;
 
                 item.onclick = function() {
+                    alert("VIDEO CLICKED: " + video.videoId);
                     player.cueVideoById(video.videoId);
                     player.playVideo();
                 };
