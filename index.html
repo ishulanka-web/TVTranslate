@@ -1222,9 +1222,14 @@
                     video.channel;
 
                 item.onclick = function() {
-                    alert("VIDEO CLICKED: " + video.videoId);
-                    player.cueVideoById(video.videoId);
-                    player.playVideo();
+                    alert("PLAYER TYPE: " + typeof player);
+
+                    try {
+                        player.loadVideoById(video.videoId);
+                        alert("COMMAND SENT: " + video.videoId);
+                    } catch (error) {
+                        alert("PLAYER ERROR: " + error);
+    }
                 };
 
                 results.appendChild(item);
