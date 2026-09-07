@@ -185,6 +185,18 @@
 
 
 <body>
+    <div id="searchSection">
+    <input
+        id="searchBox"
+        type="text"
+        placeholder="Search YouTube..."
+    >
+    <button id="searchButton" onclick="searchYouTube()">
+        SEARCH
+    </button>
+
+    <div id="searchResults"></div>
+</div>
 
 
     <!-- ================================
@@ -1162,6 +1174,54 @@
         }
 
 
+        function searchYouTube() {
+
+    var query = document.getElementById("searchBox").value.trim();
+
+    if (!query) {
+        return;
+    }
+
+    var url =
+        "https://observe-warming-activity-coordinate.trycloudflare.com/search?q=" +
+        encodeURIComponent(query);
+
+    fetch(url)
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+
+            var results = document.getElementById("searchResults");
+
+            results.innerHTML = "";
+
+            if (!data.results || data.results.length === 0) {
+                results.innerHTML = "<p>No videos found.</p>";
+                return;
+            }
+
+            data.results.forEach(function(video) {
+
+                var item = document.createElement("div");
+
+                item.innerHTML =
+                    "<strong>" + video.title + "</strong><br>" +
+                    video.channel;
+
+                item.onclick = function() {
+                    player.loadVideoById(video.videoId);
+                };
+
+                results.appendChild(item);
+            });
+        })
+        .catch(function(error) {
+            console.log(error);
+            document.getElementById("searchResults").innerHTML =
+                "<p>Search failed.</p>";
+        });
+}
     </script>
 
 
