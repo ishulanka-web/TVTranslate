@@ -488,56 +488,7 @@
 }
 
 
-                const text =
-                    await response.text();
-
-
-                captions =
-                    parseTranscript(text);
-
-
-                if (
-                    captions.length === 0
-                ) {
-
-                    throw new Error(
-                        "No captions found"
-                    );
-
-                }
-
-
-                document
-                    .getElementById("status")
-                    .innerHTML =
-
-                    captions.length +
-                    " captions loaded";
-
-
-                startSubtitleTimer();
-
-
-            } catch (error) {
-
-
-                console.error(error);
-
-
-                document
-                    .getElementById("status")
-                    .innerHTML =
-                    "Could not load captions";
-
-
-                document
-                    .getElementById("subtitle")
-                    .innerHTML =
-                    "Caption error";
-
-            }
-
-        }
+               
 
 
 
