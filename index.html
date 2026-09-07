@@ -1222,7 +1222,8 @@
                     video.channel;
 
                 item.onclick = function() {
-                    player.loadVideoById(video.videoId);
+                    player.cueVideoById(video.videoId);
+                    player.playVideo();
                 };
 
                 results.appendChild(item);
