@@ -1222,23 +1222,29 @@
                     video.channel;
 
                 item.onclick = function() {
-                    VIDEO_ID = video.videoId;
-                    document.getElementById("searchResults").innerHTML = "";
+    VIDEO_ID = video.videoId;
 
-                    var iframe = document.getElementById("youtubePlayer");
+    document.getElementById("searchResults").innerHTML = "";
 
-                    iframe.src =
-                        "https://www.youtube.com/embed/" +
-                        video.videoId +
-                        "?enablejsapi=1&cc_load_policy=0&autoplay=1";
-                };
-                    var iframe = document.getElementById("youtubePlayer");
+    var iframe = document.getElementById("youtubePlayer");
 
-                    iframe.src =
-                        "https://www.youtube.com/embed/" +
-                        video.videoId +
-                        "?enablejsapi=1&cc_load_policy=0&autoplay=1";
-                ;
+    iframe.src =
+        "https://www.youtube.com/embed/" +
+        video.videoId +
+        "?enablejsapi=1&cc_load_policy=0&autoplay=1";
+
+    if (selectedLanguage) {
+        translationRequest++;
+        captions = [];
+        translatedCache = {};
+
+        document.getElementById("subtitle").innerHTML = "";
+        document.getElementById("status").innerHTML =
+            "Loading captions...";
+
+        loadCaptions(selectedLanguage);
+    }
+};
 
                 results.appendChild(item);
             });
