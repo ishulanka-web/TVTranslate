@@ -59,10 +59,11 @@ def transcript():
             })
         )
 
-        req = urllib.request.Request(
+       req = urllib.request.Request(
     url,
     headers={
-        "Authorization": "Bearer " + FREETRANSCRIPT_API_KEY
+        "Authorization": "Bearer " + FREETRANSCRIPT_API_KEY,
+        "User-Agent": "Mozilla/5.0"
     }
 )
 
