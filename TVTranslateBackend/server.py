@@ -79,6 +79,14 @@ def transcript():
             "segments": segments
         })
 
+        except urllib.error.HTTPError as error:
+        details = error.read().decode("utf-8", errors="replace")
+        return jsonify({
+            "error": "Could not get transcript",
+            "status": error.code,
+            "details": details
+        }), 500
+
     except Exception as error:
         return jsonify({
             "error": "Could not get transcript",
