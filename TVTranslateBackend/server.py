@@ -53,7 +53,7 @@ def transcript():
         url = (
             "https://api.freetranscriptapi.com/v1/transcript?"
             + urllib.parse.urlencode({
-                "video_url": "https://www.youtube.com/watch?v=" + video_id,
+                "video_url": video_id,
                 "lang": language
             })
         )
