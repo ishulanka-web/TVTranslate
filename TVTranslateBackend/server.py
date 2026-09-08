@@ -58,12 +58,7 @@ def transcript():
             })
         )
 
-        req = urllib.request.Request(
-            url,
-            headers={
-                "Authorization": "Bearer " + FREETRANSCRIPT_API_KEY
-            }
-        )
+        req = urllib.request.Request(url)
 
         with urllib.request.urlopen(req, timeout=30) as response:
             data = response.read().decode("utf-8")
