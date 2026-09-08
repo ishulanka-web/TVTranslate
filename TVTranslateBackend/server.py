@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify
-from youtube_transcript_api import YouTubeTranscriptApi
 import os
 import urllib.parse
 import urllib.request
@@ -50,22 +49,25 @@ def transcript():
         }), 400
 
     try:
-        api = YouTubeTranscriptApi()
-
-        fetched = api.fetch(
-            video_id,
-            languages=[language]
+                url = (
+            "https://api.freetranscriptapi.com/v1/transcript?"
+            + urllib.parse.urlencode({
+                "video_url": video_id,
+                "lang": language
+            })
         )
 
-        segments = []
+        with urllib.request.urlopen(url, timeout=30) as response:
+            data = response.read().decode("utf-8")
 
-        for item in fetched:
-            segments.append({
-                "text": item.text,
-                "start": item.start,
-                "duration": item.duration
-            })
+        transcript_data = json.loads(data)
 
+        if not transcript_data.get("transcript"):
+            return jsonify({
+                "error": "No transcript found"
+            }), 404
+
+        segments = transcript_data["transcript"]
         return jsonify({
             "videoId": video_id,
             "language": language,
