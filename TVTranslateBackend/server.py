@@ -26,14 +26,14 @@ def add_cors_headers(response):
     return response
 
 
-@app.route("/")
+@app.route("/api")
 def home():
     return jsonify({
         "status": "TV Translate backend is running"
     })
 
 
-@app.route("/transcript")
+@app.route("/api/transcript")
 def transcript():
     video_id = request.args.get("videoId", "").strip()
     language = request.args.get("lang", "hi").strip().lower()
@@ -80,7 +80,7 @@ def transcript():
             "details": str(error)
         }), 500
 
-@app.route("/search")
+@app.route("/api/search")
 def search():
     query = request.args.get("q", "").strip()
 
