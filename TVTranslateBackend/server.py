@@ -47,9 +47,8 @@ def transcript():
             "error": "Unsupported language",
             "supported": list(ALLOWED_LANGUAGES.keys())
         }), 400
-
     try:
-                url = (
+        url = (
             "https://api.freetranscriptapi.com/v1/transcript?"
             + urllib.parse.urlencode({
                 "video_url": video_id,
