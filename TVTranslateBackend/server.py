@@ -47,7 +47,8 @@ def transcript():
         return jsonify({
             "error": "Unsupported language",
             "supported": list(ALLOWED_LANGUAGES.keys())
-        }), 400
+        }), 400    
+        
     try:
         url = (
             "https://api.freetranscriptapi.com/v1/transcript?"
@@ -57,15 +58,14 @@ def transcript():
             })
         )
 
-               req = urllib.request.Request(
-                   url,
-                   headers={
-                       "Authorization": "Bearer " + FREETRANSCRIPT_API_KEY
-                   }
-               )
+        req = urllib.request.Request(
+            url,
+            headers={
+                "Authorization": "Bearer " + FREETRANSCRIPT_API_KEY
+            }
+        )
 
-               with urllib.request.urlopen(req, timeout=30) as response:
-                   data = response.read().decode("utf-8")
+        with urllib.request.urlopen(req, timeout=30) as response:
             data = response.read().decode("utf-8")
 
         transcript_data = json.loads(data)
