@@ -7,6 +7,7 @@ import json
 app = Flask(__name__)
 
 YOUTUBE_API_KEY = os.environ.get("YOUTUBE_API_KEY")
+FREETRANSCRIPT_API_KEY = os.environ.get("FREETRANSCRIPT_API_KEY")
 
 ALLOWED_LANGUAGES = {
     "hi": "Hindi",
@@ -56,7 +57,15 @@ def transcript():
             })
         )
 
-        with urllib.request.urlopen(url, timeout=30) as response:
+               req = urllib.request.Request(
+                   url,
+                   headers={
+                       "Authorization": "Bearer " + FREETRANSCRIPT_API_KEY
+                   }
+               )
+
+               with urllib.request.urlopen(req, timeout=30) as response:
+                   data = response.read().decode("utf-8")
             data = response.read().decode("utf-8")
 
         transcript_data = json.loads(data)
