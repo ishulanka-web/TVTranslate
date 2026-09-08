@@ -48,8 +48,8 @@ def transcript():
         return jsonify({
             "error": "Unsupported language",
             "supported": list(ALLOWED_LANGUAGES.keys())
-        }), 400    
-        
+        }), 400
+
     try:
         url = (
             "https://api.freetranscriptapi.com/v1/transcript?"
@@ -72,7 +72,8 @@ def transcript():
             }), 404
 
         segments = transcript_data["transcript"]
-                return jsonify({
+
+        return jsonify({
             "videoId": video_id,
             "language": language,
             "languageName": ALLOWED_LANGUAGES[language],
@@ -82,17 +83,6 @@ def transcript():
 
     except urllib.error.HTTPError as error:
         details = error.read().decode("utf-8", errors="replace")
-        return jsonify({
-            "error": "Could not get transcript",
-            "status": error.code,
-            "details": details
-        }), 500
-
-    except Exception as error:
-        return jsonify({
-            "error": "Could not get transcript",
-            "details": str(error)
-        }), 500
         return jsonify({
             "error": "Could not get transcript",
             "status": error.code,
