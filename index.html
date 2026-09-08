@@ -1222,6 +1222,7 @@
                     video.channel;
 
                 item.onclick = function() {
+                    VIDEO_ID = video.videoId;
                     document.getElementById("searchResults").innerHTML = "";
 
                     var iframe = document.getElementById("youtubePlayer");
