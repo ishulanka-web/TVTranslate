@@ -910,13 +910,11 @@
 
 
             /* =================================
-               SHOW TRANSLATING
-            ================================= */
+                    KEEP PREVIOUS SUBTITLE
+               ================================= */
 
-            document
-                .getElementById("subtitle")
-                .innerHTML =
-                "Translating...";
+           /* Keep the previous subtitle visible
+           while the new translation is loading. */
 
 
             const requestNumber =
