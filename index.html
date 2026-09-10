@@ -1218,9 +1218,10 @@
 
                 var item = document.createElement("div");
 
-                item.innerHTML =
-                    "<strong>" + video.title + "</strong><br>" +
-                    video.channel;
+         item.innerHTML =
+             "<img src='" + video.thumbnail + "' style='width:120px;height:68px;object-fit:cover;margin-right:10px;vertical-align:middle;'>" +
+             "<span><strong>" + video.title + "</strong><br>" +
+             video.channel + "</span>";
 
                 item.onclick = function() {
     VIDEO_ID = video.videoId;
